@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="log4net.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Unity" Version="5.11.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\albelli.DAL\albelli.DAL.csproj" />
+    <ProjectReference Include="..\albelli.encryption.utility\albelli.encryption.utility.csproj" />
+    <ProjectReference Include="..\albille.datacontract\albelli.datacontract.csproj" />
+    <ProjectReference Include="..\Core\albelli.core.csproj" />
+  </ItemGroup>
+
+</Project>
