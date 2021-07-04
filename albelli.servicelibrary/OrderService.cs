@@ -173,21 +173,25 @@ namespace albelli.servicelibrary
                     if (product.StackableUpto > 0)
                     {
                         //If its stackable then multiply product dimension into stackableupto and then multiply it with quantilty of what customer ordered.
-                        //For example: if 5 mugs are ordered then 
-                        //stackable upto:4 * productdimensionin *qty customer ordered.
+                        //For example: if 3 mugs are ordered then and if its less then the stackable unit size then we consider only 1 unit of stackable
+                        // which is nothing but the product dimension in MM
                         if (item.Quantity <= product.StackableUpto)
                         {
                             returnValue += product.ProductDimensionInMM;
                         }
                         else
                         {
+                            //If the ordered quantity is more than 1 stackable unit
+                            //For example if the customer ordres 5 mugs where 4 mugs make 1 unit of stackable unit
+                            //We need to calcuate the mod. For example if 5 mugs are ordered then 5%4(Stackable unit) then we get the mod of 1
+                            //We also need to calcuate the quotient and in this example 5/4=1
                             int mod = item.Quantity % product.StackableUpto;
                             int quotient = item.Quantity / product.StackableUpto;
                             if (mod==0)//if the mod is 0 then we know quantity is in multiples of StackableUpto so we just need to multiply qty * quotient
                             {
                                 returnValue += product.ProductDimensionInMM * quotient;
                             }
-                            else // If not we know the mod is always going to less then 1 stackable unit so we need to multiply dimension*quotient+1 unit of dimension
+                            else // If not we know the mod is always going to less then 1 stackable (mod will be less than 4) so we need to multiply dimension*quotient+1 unit which is for the mod(<4 makes 1 stackable unit)
                             {
                                 returnValue += (product.ProductDimensionInMM * quotient) + product.ProductDimensionInMM;
                             }
@@ -214,6 +218,12 @@ namespace albelli.servicelibrary
         /// <returns>
         /// True if its a valid object to save to the database.
         /// </returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// If order is null
+        /// If customerId is less than or equals 0
+        /// If OrderId is less than or equals 0
+        /// If ordered quanity is less than or equals to 0
+        /// </exception>
         private bool Validate(datacontract.IOrder order)
         {
             bool returnValue = true;
@@ -224,7 +234,7 @@ namespace albelli.servicelibrary
                 throw new ArgumentNullException("Invalid Customer ID");
             if (order.OrderId <= 0)
                 throw new ArgumentNullException("Invalid Order id");
-            if (order.OrderDetails.Any(x => x.Quantity == 0))
+            if (order.OrderDetails.Any(x => x.Quantity <= 0))
                 throw new ArgumentNullException("Quantity cannot be 0");
 
             return returnValue;
